@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOKOS - Aplikasi Pulsa & PPOB</title>
+    <style>
+        :root {
+            --primary: #25D366;
+            --secondary: #128C7E;
+            --dark: #075E54;
+            --light: #DCF8C6;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --success: #34C759;
+            --info: #007AFF;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--secondary), var(--dark));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .balance {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .nav-item {
+            margin-bottom: 10px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 10px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .nav-link i {
+            font-size: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .action-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .see-all {
+            color: var(--info);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .transaction-table th, .transaction-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transaction-table th {
+            background-color: #f9f9f9;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .transaction-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background-color: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-failed {
+            background-color: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .product-price {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .product-stock {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .buy-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .buy-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.2);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .result-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            background-color: rgba(52, 199, 89, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .error-message {
+            background-color: rgba(255, 59, 48, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .user-info {
+                justify-content: center;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-mobile-alt"></i></span>
+                <span>NOKOS - Pulsa & PPOB</span>
+            </div>
+            <div class="user-info">
+                <div class="balance">
+                    <i class="fas fa-wallet"></i> Rp 5.250.000
+                </div>
+                <div class="avatar">A</div>
+            </div>
+        </header>
+        
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="search-box">
+                    <input type="text" class="form-control" placeholder="Cari menu...">
+                </div>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-bolt"></i>
+                            <span>Pulsa</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-database"></i>
+                            <span>Paket Data</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-plug"></i>
+                            <span>Token Listrik</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-tv"></i>
+                            <span>TV Kabel</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Voucher Game</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>PDAM</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-history"></i>
+                            <span>Riwayat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Pengaturan</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="main-content">
+                <div class="quick-actions">
+                    <a href="#" class="action-btn" id="pulsa-btn">
+                        <i class="fas fa-bolt action-icon"></i>
+                        <span>Pulsa</span>
+                    </a>
+                    <a href="#" class="action-btn" id="data-btn">
+                        <i class="fas fa-database action-icon"></i>
+                        <span>Paket Data</span>
+                    </a>
+                    <a href="#" class="action-btn" id="token-btn">
+                        <i class="fas fa-plug action-icon"></i>
+                        <span>Token Listrik</span>
+                    </a>
+                    <a href="#" class="action-btn" id="pln-btn">
+                        <i class="fas fa-bolt action-icon"></i>
+                        <span>Tagihan PLN</span>
+                    </a>
+                    <a href="#" class="action-btn" id="pdam-btn">
+                        <i class="fas fa-lightbulb action-icon"></i>
+                        <span>PDAM</span>
+                    </a>
+                    <a href="#" class="action-btn" id="game-btn">
+                        <i class="fas fa-gamepad action-icon"></i>
+                        <span>Voucher Game</span>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Transaksi Terakhir</h3>
+                        <a href="#" class="see-all">Lihat Semua</a>
+                    </div>
+                    <table class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th>ID Transaksi</th>
+                                <th>Tanggal</th>
+                                <th>Layanan</th>
+                                <th>Nomor</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TRX-20230615-001</td>
+                                <td>15/06/2023 08:15</td>
+                                <td>Pulsa 50.000</td>
+                                <td>081234567890</td>
+                                <td>Rp 50.000</td>
+                                <td><span class="status status-success">Sukses</span></td>
+                            </tr>
+                            <tr>
+                                <td>TRX-20230615-002</td>
+                                <td>15/06/2023 09:30</td>
+                                <td>Paket Data 10GB</td>
+                                <td>082345678901</td>
+                                <td>Rp 75.000</td>
+                                <td><span class="status status-success">Sukses</span></td>
+                            </tr>
+                            <tr>
+                                <td>TRX-20230615-003</td>
+                                <td>15/06/2023 10:45</td>
+                                <td>Token Listrik 100.000</td>
+                                <td>085678901234</td>
+                                <td>Rp 100.000</td>
+                                <td><span class="status status-pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>TRX-20230615-004</td>
+                                <td>15/06/2023 11:20</td>
+                                <td>Voucher Game ML 100</td>
+                                <td>1234567890</td>
+                                <td>Rp 120.000</td>
+                                <td><span class="status status-failed">Gagal</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Produk Populer</h3>
+                        <a href="#" class="see-all">Lihat Semua</a>
+                    </div>
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <h4 class="product-name">Pulsa 10.000</h4>
+                            <div class="product-price">Rp 11.000</div>
+                            <div class="product-stock">
+                                <span>Stok:</span>
+                                <span>125</span>
+                            </div>
+                            <button class="buy-btn">Beli Sekarang</button>
+                        </div>
+                        <div class="product-card">
+                            <h4 class="product-name">Paket Data 3GB</h4>
+                            <div class="product-price">Rp 35.000</div>
+                            <div class="product-stock">
+                                <span>Stok:</span>
+                                <span>42</span>
+                            </div>
+                            <button class="buy-btn">Beli Sekarang</button>
+                        </div>
+                        <div class="product-card">
+                            <h4 class="product-name">Token Listrik 50.000</h4>
+                            <div class="product-price">Rp 50.500</div>
+                            <div class="product-stock">
+                                <span>Stok:</span>
+                                <span>78</span>
+                            </div>
+                            <button class="buy-btn">Beli Sekarang</button>
+                        </div>
+                        <div class="product-card">
+                            <h4 class="product-name">Voucher ML 100 Diamonds</h4>
+                            <div class="product-price">Rp 120.000</div>
+                            <div class="product-stock">
+                                <span>Stok:</span>
+                                <span>15</span>
+                            </div>
+                            <button class="buy-btn">Beli Sekarang</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pulsa Modal -->
+    <div class="modal" id="pulsa-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-bolt"></i> Beli Pulsa</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="pulsa-form">
+                <div class="form-group">
+                    <label for="pulsa-operator" class="form-label">Operator</label>
+                    <select id="pulsa-operator" class="form-control" required>
+                        <option value="">Pilih Operator</option>
+                        <option value="telkomsel">Telkomsel</option>
+                        <option value="xl">XL</option>
+                        <option value="indosat">Indosat</option>
+                        <option value="tri">3 (Tri)</option>
+                        <option value="smartfren">Smartfren</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pulsa-nominal" class="form-label">Nominal</label>
+                    <select id="pulsa-nominal" class="form-control" required>
+                        <option value="">Pilih Nominal</option>
+                        <option value="5000">5.000</option>
+                        <option value="10000">10.000</option>
+                        <option value="25000">25.000</option>
+                        <option value="50000">50.000</option>
+                        <option value="100000">100.000</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pulsa-phone" class="form-label">Nomor HP</label>
+                    <input type="text" id="pulsa-phone" class="form-control" placeholder="081234567890" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="submit-btn">Proses Pembelian</button>
+                </div>
+                <div id="pulsa-result" class="result-message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Data Package Modal -->
+    <div class="modal" id="data-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-database"></i> Paket Data</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="data-form">
+                <div class="form-group">
+                    <label for="data-operator" class="form-label">Operator</label>
+                    <select id="data-operator" class="form-control" required>
+                        <option value="">Pilih Operator</option>
+                        <option value="telkomsel">Telkomsel</option>
+                        <option value="xl">XL</option>
+                        <option value="indosat">Indosat</option>
+                        <option value="tri">3 (Tri)</option>
+                        <option value="smartfren">Smartfren</option>
+                        <option value="axis">Axis</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data-package" class="form-label">Paket Data</label>
+                    <select id="data-package" class="form-control" required>
+                        <option value="">Pilih Paket</option>
+                        <option value="1gb">1GB/7hr - Rp 15.000</option>
+                        <option value="3gb">3GB/30hr - Rp 35.000</option>
+                        <option value="5gb">5GB/30hr - Rp 50.000</option>
+                        <option value="10gb">10GB/30hr - Rp 75.000</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data-phone" class="form-label">Nomor HP</label>
+                    <input type="text" id="data-phone" class="form-control" placeholder="081234567890" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="submit-btn">Proses Pembelian</button>
+                </div>
+                <div id="data-result" class="result-message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Modal functionality
+        const openModal = (modalId) => {
+            document.getElementById(modalId).style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        };
+        
+        const closeModal = (modalId) => {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+            // Reset form and result message
+            const form = document.querySelector(`#${modalId} form`);
+            if(form) form.reset();
+            const result = document.querySelector(`#${modalId} .result-message`);
+            if(result) {
+                result.style.display = 'none';
+                result.textContent = '';
+                result.className = 'result-message';
+            }
+        };
+        
+        // Attach event listeners to quick action buttons
+        document.getElementById('pulsa-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('pulsa-modal');
+        });
+        
+        document.getElementById('data-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('data-modal');
+        });
+        
+        // Close modals when clicking close button
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                closeModal(modal.id);
+            });
+        });
+        
+        // Close modals when clicking outside modal content
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if(e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+        
+        // Form submission for pulsa
+        document.getElementById('pulsa-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const operator = document.getElementById('pulsa-operator').value;
+            const nominal = document.getElementById('pulsa-nominal').value;
+            const phone = document.getElementById('pulsa-phone').value;
+            const resultDiv = document.getElementById('pulsa-result');
+            
+            // Validate phone number
+            if(!/^[0-9]{10,13}$/.test(phone)) {
+                resultDiv.textContent = 'Nomor HP tidak valid!';
+                resultDiv.className = 'result-message error-message';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Simulate API call
+            resultDiv.textContent = 'Memproses pembelian pulsa...';
+            resultDiv.className = 'result-message';
+            resultDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                // Simulate success (80%) or failure (20%)
+                const isSuccess = Math.random() > 0.2;
+                
+                if(isSuccess) {
+                    resultDiv.textContent = `Pembelian pulsa ${nominal} untuk ${operator} nomor ${phone} berhasil!`;
+                    resultDiv.className = 'result-message success-message';
+                    
+                    // Update transaction history
+                    addTransactionToHistory({
+                        id: `TRX-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random() * 9000)}`,
+                        date: new Date().toLocaleString('id-ID'),
+                        service: `Pulsa ${nominal}`,
+                        number: phone,
+                        amount: `Rp ${parseInt(nominal) + 1000}`,
+                        status: 'Sukses'
+                    });
+                } else {
+                    resultDiv.textContent = 'Pembelian pulsa gagal. Silakan coba lagi.';
+                    resultDiv.className = 'result-message error-message';
+                }
+            }, 2000);
+        });
+        
+        // Form submission for data package
+        document.getElementById('data-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const operator = document.getElementById('data-operator').value;
+            const package = document.getElementById('data-package').value;
+            const phone = document.getElementById('data-phone').value;
+            const resultDiv = document.getElementById('data-result');
+            
+            // Validate phone number
+            if(!/^[0-9]{10,13}$/.test(phone)) {
+                resultDiv.textContent = 'Nomor HP tidak valid!';
+                resultDiv.className = 'result-message error-message';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Simulate API call
+            resultDiv.textContent = 'Memproses pembelian paket data...';
+            resultDiv.className = 'result-message';
+            resultDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                // Simulate success (80%) or failure (20%)
+                const isSuccess = Math.random() > 0.2;
+                
+                if(isSuccess) {
+                    const packageName = document.getElementById('data-package').options[document.getElementById('data-package').selectedIndex].text.split(' - ')[0];
+                    resultDiv.textContent = `Pembelian ${packageName} untuk ${operator} nomor ${phone} berhasil!`;
+                    resultDiv.className = 'result-message success-message';
+                    
+                    // Update transaction history
+                    addTransactionToHistory({
+                        id: `TRX-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random() * 9000)}`,
+                        date: new Date().toLocaleString('id-ID'),
+                        service: packageName,
+                        number: phone,
+                        amount: document.getElementById('data-package').options[document.getElementById('data-package').selectedIndex].text.split(' - ')[1],
+                        status: 'Sukses'
+                    });
+                } else {
+                    resultDiv.textContent = 'Pembelian paket data gagal. Silakan coba lagi.';
+                    resultDiv.className = 'result-message error-message';
+                }
+            }, 2000);
+        });
+        
+        // Function to add transaction to history table
+        function addTransactionToHistory(transaction) {
+            const table = document.querySelector('.transaction-table tbody');
+            const newRow = document.createElement('tr');
+            
+            newRow.innerHTML = `
+                <td>${transaction.id}</td>
+                <td>${transaction.date}</td>
+                <td>${transaction.service}</td>
+                <td>${transaction.number}</td>
+                <td>${transaction.amount}</td>
+                <td><span class="status status-success">${transaction.status}</span></td>
+            `;
+            
+            // Insert at the top of the table
+            if(table.firstChild) {
+                table.insertBefore(newRow, table.firstChild);
+            } else {
+                table.appendChild(newRow);
+            }
+        }
+        
+        // Buy buttons for popular products
+        document.querySelectorAll('.product-card .buy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productCard = this.closest('.product-card');
+                const productName = productCard.querySelector('.product-name').textContent;
+                const productPrice = productCard.querySelector('.product-price').textContent;
+                
+                alert(`Anda akan membeli ${productName} seharga ${productPrice}`);
+                // In a real implementation, this would open the appropriate modal
+            });
+        });
+    </script>
+</body>
+</html>

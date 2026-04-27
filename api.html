@@ -1,0 +1,81 @@
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const mysql = require('mysql2');
+
+// Database connection
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'nokos_ppob'
+});
+
+// Middleware
+app.use(bodyParser.json());
+
+// API Endpoints
+app.post('/api/purchase/pulsa', (req, res) => {
+  const { operator, nominal, phone } = req.body;
+  
+  // Validate request
+  if(!operator || !nominal || !phone) {
+    return res.status(400).json({ success: false, message: 'Missing required fields' });
+  }
+  
+  // Process with payment gateway (Virtusim, Digiflazz, etc)
+  processPulsaPurchase(operator, nominal, phone, (result) => {
+    if(result.success) {
+      // Save to database
+      db.query(
+        'INSERT INTO transactions (user_id, service, number, amount, status) VALUES (?, ?, ?, ?, ?)',
+        [req.user.id, `Pulsa ${nominal}`, phone, nominal, 'success'],
+        (err) => {
+          if(err) console.error(err);
+          
+          // Return success response
+          res.json({ 
+            success: true,
+            data: {
+              transaction_id: result.transaction_id,
+              message: 'Pulsa purchase successful'
+            }
+          });
+        }
+      );
+    } else {
+      res.status(500).json({ 
+        success: false,
+        message: result.message || 'Pulsa purchase failed'
+      });
+    }
+  });
+});
+
+// Other API endpoints for data packages, PLN, etc...
+
+function processPulsaPurchase(operator, nominal, phone, callback) {
+  // In a real implementation, this would call the payment gateway API
+  // This is a simulation
+  setTimeout(() => {
+    const isSuccess = Math.random() > 0.2; // 80% success rate
+    
+    if(isSuccess) {
+      callback({
+        success: true,
+        transaction_id: `TRX-${Date.now()}`,
+        message: 'Pulsa purchase processed successfully'
+      });
+    } else {
+      callback({
+        success: false,
+        message: 'Payment gateway timeout'
+      });
+    }
+  }, 1500);
+}
+
+// Start server
+app.listen(3000, () => {
+  console.log('PPOB API running on port 3000');
+});
